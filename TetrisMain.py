@@ -1,16 +1,24 @@
 
+
+
+# Imports
 from collections import OrderedDict
 import random
-
-from pygame import Rect
 import pygame
+from pygame import Rect
+
 import numpy as np
 
-
+# Maybe change...
 WINDOW_WIDTH, WINDOW_HEIGHT = 500, 601
 GRID_WIDTH, GRID_HEIGHT = 300, 600
 TILE_SIZE = 30
+BOX_SIZE = 100
+speed = 1000
 
+
+def checkForPerfect():
+    return None
 
 def remove_empty_columns(arr, _x_offset=0, _keep_counting=True):
     """
@@ -52,7 +60,7 @@ class Block(pygame.sprite.Sprite):
             # Ignore the current block which will always collide with itself.
             if block == other_block:
                 continue
-            if pygame.sprite.collide_mask(block, other_block) is not None:
+            if pygame.sprite.collide_mask(block, other_block) is not None and (other_block != group.current_block):
                 return True
         return False
 
@@ -148,6 +156,7 @@ class Block(pygame.sprite.Sprite):
             self.x -= 1
 
     def move_down(self, group):
+
         self.y += 1
         # Check if the block reached the bottom or collided with
         # another one.
@@ -220,6 +229,39 @@ class ZBlock(Block):
         (1, 0),
     )
 
+class Mirage(Block):
+
+    def __init__(self, new_block = None):
+        self.struct = new_block.struct
+        super().__init__()
+        self.color = (255,255,255)
+        self.struct = new_block.struct
+        self._draw(new_block.x,new_block.y)
+        
+        
+
+        
+    def _draw(self, x=0, y=0):
+        width = len(self.struct[0]) * TILE_SIZE
+        height = len(self.struct) * TILE_SIZE
+        self.image = pygame.surface.Surface([width, height])
+        self.image.set_colorkey((0, 0, 0))
+        # Position and size
+        self.rect = Rect(0, 0, width, height)
+        self.x = x
+        self.y = y
+        for y, row in enumerate(self.struct):
+            for x, col in enumerate(row):
+                if col:
+                    pygame.draw.rect(
+                        self.image,
+                        self.color,
+                        Rect(x*TILE_SIZE + 1, y*TILE_SIZE + 1,
+                            TILE_SIZE - 2, TILE_SIZE - 2)
+                    )
+        self._create_mask()
+
+
 
 class BlocksGroup(pygame.sprite.OrderedUpdates):
 
@@ -230,6 +272,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
 
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
+        self.Mirage = None
         self._reset_grid()
         self._ignore_next_stop = False
         self.score = 0
@@ -302,35 +345,55 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         if Block.collide(new_block, self):
             raise TopReached
         self.add(new_block)
+
         self.next_block = BlocksGroup.get_random_block()
         self.update_grid()
         self._check_line_completion()
 
+
+    
+
     def update_grid(self):
         self._reset_grid()
+        self.Mirage = Mirage(self.current_block)
+        
+        while True:
+            try:
+                
+                self.Mirage.move_down(self)
+            except BottomReached:
+                break
+        
+
         for block in self:
             for y_offset, row in enumerate(block.struct):
                 for x_offset, digit in enumerate(row):
                     # Prevent replacing previous blocks.
                     if digit == 0:
                         continue
+                    
                     rowid = block.y + y_offset
                     colid = block.x + x_offset
                     self.grid[rowid][colid] = (block, y_offset)
 
+
+
+
     @property
     def current_block(self):
         return self.sprites()[-1]
+    
 
     def update_current_block(self):
         try:
+            
             self.current_block.move_down(self)
         except BottomReached:
             self.stop_moving_current_block()
             self._create_new_block()
         else:
             self.update_grid()
-
+            
     def move_current_block(self):
         # First check if there's something to move.
         if self._current_block_movement_heading is None:
@@ -374,6 +437,7 @@ def draw_grid(background):
     # Vertical lines.
     for i in range(11):
         x = TILE_SIZE * i
+
         pygame.draw.line(
             background, grid_color, (x, 0), (x, GRID_HEIGHT)
         )
@@ -398,6 +462,8 @@ def main():
     game_over = False
     # Create background.
     background = pygame.Surface(screen.get_size())
+
+
     bgcolor = (0, 0, 0)
     background.fill(bgcolor)
     # Draw the grid on top of the background.
@@ -421,12 +487,13 @@ def main():
     MOVEMENT_KEYS = pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN
     EVENT_UPDATE_CURRENT_BLOCK = pygame.USEREVENT + 1
     EVENT_MOVE_CURRENT_BLOCK = pygame.USEREVENT + 2
-    pygame.time.set_timer(EVENT_UPDATE_CURRENT_BLOCK, 1000)
+    pygame.time.set_timer(EVENT_UPDATE_CURRENT_BLOCK, speed)
     pygame.time.set_timer(EVENT_MOVE_CURRENT_BLOCK, 100)
 
     blocks = BlocksGroup()
 
     while run:
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -458,8 +525,23 @@ def main():
 
         # Draw background and grid.
         screen.blit(background, (0, 0))
+
+        if checkForPerfect() != None:
+
+            color = (255,0,0)
+
+        else:
+            
+            color = (0,255,0)
+
+
+        pygame.draw.rect(screen, color, pygame.Rect(375, 400, 60, 60))
         # Blocks.
+        if blocks.Mirage != None:
+            blocks.add(blocks.Mirage)
         blocks.draw(screen)
+
+        blocks.remove(blocks.Mirage)
         # Sidebar with misc. information.
         draw_centered_surface(screen, next_block_text, 50)
         draw_centered_surface(screen, blocks.next_block.image, 100)
