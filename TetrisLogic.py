@@ -65,7 +65,7 @@ def findPerfectMoves(board, piece):
                     #determines whether the selected tile on a block would leave a hole beneath it
                     #(relative to the board) in a potential block placement
                     if(y != len(board)):
-                        if(((board[y-h][x+w] == 0) and (piece[w][h] == 1))):
+                        if(((board[y-h][x+w] == 0) and (piece[h][w] == 1))):
                             
                             #if this is the bottom row of the block
                             if(h == 0):
@@ -73,7 +73,7 @@ def findPerfectMoves(board, piece):
                                 break
 
                             #determines whether there is a tile within the block beneath the currently selected block tile
-                            elif((piece[h][w] == 1) and (piece[w][h-1] == 0)):
+                            elif((piece[h][w] == 1) and (piece[h-1][w] == 0)):
                                 valid = False
                                 break
 
