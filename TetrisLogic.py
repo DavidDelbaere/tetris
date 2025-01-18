@@ -11,8 +11,8 @@ def findPerfectMoves(board, piece):
     #    []
     # would return 1
     firstLeftTile = 0
-    for height in range(len(piece.struct)):
-        if(piece.struct[0][height] == 1):
+    for height in range(len(piece)):
+        if(piece[0][height] == 1):
             firstLeftTile = height
             break
 
@@ -38,7 +38,7 @@ def findPerfectMoves(board, piece):
                 break
         
         #iterates through the columns in a block
-        for w in range(len(piece.struct[0])):
+        for w in range(len(piece[0])):
             
             #determines whether the right side of a block would lie outside
             #the play area in a potential position
@@ -48,7 +48,7 @@ def findPerfectMoves(board, piece):
             else:
 
                 #iterates through the rows in a block
-                for h in range(len(piece.struct)):
+                for h in range(len(piece)):
 
                     #determines whether the bottom of a block would lie beneath
                     #the play area in a potential position
@@ -58,23 +58,24 @@ def findPerfectMoves(board, piece):
 
                     #determines whether a tile on the board(that is filled) would be intersected
                     #by a potential block placement
-                    elif((board[y-h-1][x+w] == 1) and (piece.struct[h][w] == 1)):
+                    elif((board[y-h-1][x+w] == 1) and (piece[h][w] == 1)):
                         valid = False
                         break
 
                     #determines whether the selected tile on a block would leave a hole beneath it
                     #(relative to the board) in a potential block placement
-                    elif(((board[y-h][x+w] == 0) and (piece.struct[w][h] == 1))):
-                        
-                        #if this is the bottom row of the block
-                        if(h == 0):
-                            valid = False
-                            break
+                    if(y != len(board)):
+                        if(((board[y-h][x+w] == 0) and (piece[w][h] == 1))):
+                            
+                            #if this is the bottom row of the block
+                            if(h == 0):
+                                valid = False
+                                break
 
-                        #determines whether there is a tile within the block beneath the currently selected block tile
-                        elif((piece.struct[h][w] == 1) and (piece.struct[w][h-1] == 0)):
-                            valid = False
-                            break
+                            #determines whether there is a tile within the block beneath the currently selected block tile
+                            elif((piece[h][w] == 1) and (piece[w][h-1] == 0)):
+                                valid = False
+                                break
 
         if(valid):
             validPosList.append(x)
