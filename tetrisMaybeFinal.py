@@ -33,7 +33,6 @@ def remove_empty_columns(arr, _x_offset=0, _keep_counting=True):
 
 def find_perfect_moves(board, piece):
     
-    print(piece[0][0])
     #determine height of first filled tile in the leftmost column of a block
     #e.g.
     # []
@@ -76,12 +75,14 @@ def find_perfect_moves(board, piece):
             #determines whether the right side of a block would lie outside
             #the play area in a potential position
             if(x + w >= len(board[0])):
+                print("case1")
                 valid = False
                 break
             else:
                 #determines whether the bottom of a block would lie beneath
                 #the play area in a potential position
                 if((y + firstLeftTile)>len(board)):
+                        print("case2")
                         valid = False
                         break
 
@@ -91,27 +92,38 @@ def find_perfect_moves(board, piece):
 
                         #determines whether a tile on the board(that is filled) would be intersected
                         #by a potential block placement
-                        if((board[y-h-1][x+w] == 1) and (piece[h][w] == 1)):
+                        if((board[y-h-1][x+w] == 1) and (piece[len(piece)-h-1][w] == 1)):
+                            print("case3")
                             valid = False
                             break
                             
                         #determines whether the selected tile on a block would leave a hole beneath it
                         #(relative to the board) in a potential block placement
                         elif(y != len(board)):
-                            if(((board[y-h][x+w] == 0) and (piece[h][w] == 1))):
+                            if(((board[y-len(piece)+h+1][x+w] == 0) and (piece[len(piece)-h-1][w] == 1))):
                                 
                                 #if this is the bottom row of the block
-                                if(h == 0):
+                                if(h == (len(piece) - 1)):
+                                    print("case4")
                                     valid = False
                                     break
 
                                 #determines whether there is a tile within the block beneath the currently selected block tile
-                                elif((piece[h][w] == 1) and (piece[h-1][w] == 0)):
+                                elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                    print("case5")
                                     valid = False
                                     break
+                        
+                        elif(h != len(piece)-1):
+                            if((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                print("case6")
+                                valid = False
+                                break
 
         if(valid):
             validPosList.append(x)
+        
+    print(validPosList)
 
     if(len(validPosList) != 0):
         bestPos = 0
