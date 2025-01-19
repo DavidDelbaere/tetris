@@ -694,7 +694,7 @@ def main():
         # Draw background and grid.
         screen.blit(background, (0, 0))
 
-        if blocks.foundMove != None:
+        if blocks.foundMove == None:
 
             color = (255,0,0)
             ai_text = font.render(
