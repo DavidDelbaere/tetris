@@ -650,7 +650,7 @@ def main():
     score_msg_text = font.render(
         "Score:", True, (255, 255, 255), bgcolor)
     game_over_text = font.render(
-        "¡Game over!", True, (255, 220, 0), bgcolor)
+        "Game over!", True, (255, 220, 0), bgcolor)
 
     # Event constants.
     MOVEMENT_KEYS = pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN
@@ -711,7 +711,6 @@ def main():
             draw_centered_surface(screen, ai_text, 350)
 
 
-        pygame.draw.rect(screen, color, pygame.Rect(375, 400, 60, 60))
         # Blocks.
         if blocks.Mirage != None:
             blocks.add(blocks.Mirage)
@@ -726,12 +725,10 @@ def main():
             str(blocks.score), True, (255, 255, 255), bgcolor)
         draw_centered_surface(screen, score_text, 270)
         if game_over:
-            draw_centered_surface(screen, game_over_text, 360)
-            draw_centered_surface(screen, game_over_text, 360)
+            draw_centered_surface(screen, game_over_text, 400)
             if restart_button is None:  
-                restart_button = Button(350, 500, 100, 50, "RESTART", COLOUR_RED, COLOUR_HOVER_RED, COLOUR_WHITE)
+                restart_button = Button(350, 450, 100, 50, "RESTART", COLOUR_RED, COLOUR_HOVER_RED, COLOUR_WHITE)
 
-            draw_centered_surface(screen, game_over_text, 360)
             restart_button.draw(screen)
 
             # Check if the button is clicked
