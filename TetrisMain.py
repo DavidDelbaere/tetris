@@ -481,6 +481,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         self.Mirage = None
+        self.AI = False
         self._reset_grid()
         self._ignore_next_stop = False
         self.speed = 500
@@ -553,13 +554,8 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
     def _reset_grid(self):
         self.grid = [[0 for _ in range(10)] for _ in range(20)]
 
-    def _create_new_block(self):
-
-        new_block = self.next_block or BlocksGroup.get_random_block()
-        if Block.collide(new_block, self):
-            raise TopReached
-        self.add(new_block)
-    
+    def check(self):
+            
         ff_grid = self.grid
         for i in range(len(ff_grid)):
             for j in range(len(ff_grid[i])):
@@ -598,6 +594,15 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             self.rotations = bestMove[0]
             for i in range(self.rotations):
                 self.current_block.rotate(self)
+        else:
+            self.AI = False
+    def _create_new_block(self):
+
+        new_block = self.next_block or BlocksGroup.get_random_block()
+        if Block.collide(new_block, self):
+            raise TopReached
+        self.add(new_block)
+        self.check()
         self.next_block = BlocksGroup.get_random_block()
         self.update_grid()
         self._check_line_completion()
@@ -609,7 +614,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
     def update_grid(self):
         self._reset_grid()
 
-        if self.foundMove != None:
+        if self.foundMove != None and self.AI == True:
 
             self.Mirage = Mirage(self.current_block,self.foundMove)
         else:
@@ -644,7 +649,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
     def update_current_block(self):
         try:
             
-            if self.foundMove != None:
+            if self.foundMove != None and self.AI == True:
                     if self.db == False:
                         self.db = True
 
@@ -657,6 +662,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             self.current_block.move_down(self)
         except BottomReached:
             self.db = False
+            self.AI = False
             self.foundMove = None
             self.stop_moving_current_block()
             self._create_new_block()
@@ -672,15 +678,18 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             pygame.K_DOWN: self.current_block.move_down,
             pygame.K_LEFT: self.current_block.move_left,
             pygame.K_RIGHT: self.current_block.move_right
+
         }
             # Each function requires the group as the first argument
             # to check any possible collision.
         try:
-            if self.foundMove == None or self._current_block_movement_heading == pygame.K_DOWN:
+
+            if self.foundMove == None or self._current_block_movement_heading == pygame.K_DOWN or self.AI == False:
                 action[self._current_block_movement_heading](self)
         except BottomReached:
             self.foundMove = None
             self.db = False
+            self.AI = False
             self.stop_moving_current_block()
             self._create_new_block()
         else:
@@ -780,8 +789,15 @@ def main():
                 if not paused and not game_over:
                     if event.key in MOVEMENT_KEYS:
                         blocks.stop_moving_current_block()
-                    elif event.key == pygame.K_UP and blocks.foundMove == None:
+                    elif event.key == pygame.K_UP and blocks.AI != True:
                         blocks.rotate_current_block()
+                    elif event.key == pygame.K_SPACE:
+                        if blocks.AI == False:
+
+                            blocks.AI =True
+                        else:
+                            blocks.AI =False
+
                 if event.key == pygame.K_p:
                     paused = not paused
 
@@ -811,13 +827,17 @@ def main():
                 "No Optimal Move", True, (255, 0, 0), bgcolor)
             draw_centered_surface(screen, ai_text, 350)
 
-        else:
+        elif blocks.AI == True:
             
             color = (0,255,0)
             ai_text = font.render(
                 "Move Optimized!", True, (0, 255, 0), bgcolor)
             draw_centered_surface(screen, ai_text, 350)
-
+        else:
+            color = (0,255,0)
+            ai_text = font.render(
+                "Space for help!", True, (0, 255, 0), bgcolor)
+            draw_centered_surface(screen, ai_text, 350)
 
         # Blocks.
         if blocks.Mirage != None:
