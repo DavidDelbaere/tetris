@@ -14,7 +14,7 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 500, 601
 GRID_WIDTH, GRID_HEIGHT = 300, 600
 TILE_SIZE = 30
 BOX_SIZE = 100
-speed = 1000
+
 
 
 def checkForPerfect():
@@ -275,6 +275,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.Mirage = None
         self._reset_grid()
         self._ignore_next_stop = False
+        self.speed = 1000
         self.score = 0
         self.next_block = None
         # Not really moving, just to initialize the attribute.
@@ -291,6 +292,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         for i, row in enumerate(self.grid[::-1]):
             if all(row):
                 self.score += 5
+                self.speed -= 5
                 # Get the blocks affected by the line deletion and
                 # remove duplicates.
                 affected_blocks = list(
@@ -487,10 +489,11 @@ def main():
     MOVEMENT_KEYS = pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN
     EVENT_UPDATE_CURRENT_BLOCK = pygame.USEREVENT + 1
     EVENT_MOVE_CURRENT_BLOCK = pygame.USEREVENT + 2
-    pygame.time.set_timer(EVENT_UPDATE_CURRENT_BLOCK, speed)
+    
+    blocks = BlocksGroup()
+    pygame.time.set_timer(EVENT_UPDATE_CURRENT_BLOCK, blocks.speed)
     pygame.time.set_timer(EVENT_MOVE_CURRENT_BLOCK, 100)
 
-    blocks = BlocksGroup()
 
     while run:
 
