@@ -1,4 +1,4 @@
-# tetris
+# High Score - Nav-Canada Challenge
 
 Welcome to High Score, automation that supports without taking over. 
 
