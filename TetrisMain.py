@@ -72,7 +72,9 @@ def remove_empty_columns(arr, _x_offset=0, _keep_counting=True):
             _keep_counting = False
     return arr, _x_offset
 
+
 def find_perfect_moves(board, piece):
+
 
     #determine height of first filled tile in the leftmost column of a block
     #e.g.
@@ -169,9 +171,42 @@ def find_perfect_moves(board, piece):
 
                         #determines whether the selected tile on a block would leave a hole beneath it
                         #(relative to the board) in a potential block placement
-                        elif(blockColumnDif != boardColumnDif):
-                            valid = False
-                            break
+                        elif(y+columnDif < len(board)):
+
+                            if(columnDif < 0):
+                                if(((board[y-len(piece)+h+1+columnDif][x+w] == 0) and (piece[h][w] == 1))):
+                                    
+                                    #if this is the bottom row of the block
+                                    if(h == (len(piece) - 1)):
+                                        print(str(x) + ": case4")
+                                        valid = False
+                                        break
+
+                                    #determines whether there is a tile within the block beneath the currently selected block tile
+                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                        print(str(x) + ": case5")
+                                        valid = False
+                                        break
+                            else:
+                                if(((board[y-len(piece)+h+columnDif][x+w] == 0) and (piece[h][w] == 1))):
+                                    
+                                    #if this is the bottom row of the block
+                                    if(h == (len(piece) - 1)):
+                                        print(str(x) + ": case4")
+                                        valid = False
+                                        break
+
+                                    #determines whether there is a tile within the block beneath the currently selected block tile
+                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                        print(str(x) + ": case5")
+                                        valid = False
+                                        break
+                        
+                        elif(h != len(piece)-1):
+                            if((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                print(str(x) + ": case6")
+                                valid = False
+                                break
 
         # check if the spots above the potential piece are occupied and therefore the spot is impossible to reach
         # for each column of the piece: find the highest point that is occupied
@@ -195,7 +230,6 @@ def find_perfect_moves(board, piece):
         if(valid):
             validPosList.append(x)
 
-    #print(validPosList)
     if(len(validPosList) != 0):
         bestPos = 0
         bestAvgHeight = -1
@@ -468,43 +502,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
 
 
  
-    def find_perfect_move(self):
-        self.pot_best_moves = []
-        ff_grid = self.grid
-        for i in range(len(ff_grid)):
-            for j in range(len(ff_grid[i])):
-                if ff_grid[i][j] != 0:
-                    ff_grid[i][j] = 1
-        next_block_rotated_1 = np.rot90(self.current_block.struct)
-        next_block_rotated_2 = np.rot90(self.current_block.struct)
-        next_block_rotated_2 = np.rot90(next_block_rotated_2)
-        next_block_rotated_3 = np.rot90(self.current_block.struct)
-        next_block_rotated_3 = np.rot90(next_block_rotated_3)
-        next_block_rotated_3 = np.rot90(next_block_rotated_3)
-        
-
-        perfectMove1 = self.find_perfect_moves(ff_grid, self.current_block.struct)
-        perfectMove2 = self.find_perfect_moves(ff_grid, next_block_rotated_1)
-        perfectMove3 = self.find_perfect_moves(ff_grid, next_block_rotated_2)
-        perfectMove4 = self.find_perfect_moves(ff_grid, next_block_rotated_3)
-
-
-
-        self.pot_best_moves.append((0, perfectMove1))
-        self.pot_best_moves.append((1, perfectMove2))
-        self.pot_best_moves.append((2, perfectMove3))
-        self.pot_best_moves.append((3, perfectMove4))
-
-        bestMove = (0, 0, -1)
-        for x in range(len(self.pot_best_moves)):
-            if(type(self.pot_best_moves[x][1][1]) is not str):
-                if((self.pot_best_moves[x][1][1] < bestMove[2]) or (bestMove[2] < 0)):
-                    bestMove = (self.pot_best_moves[x][0], self.pot_best_moves[x][1][0], self.pot_best_moves[x][1][1])
-        #print(pot_best_moves)
-        if(bestMove[2] < 0):
-            return (None,"AHHHHH")
-        return bestMove
-        
+    
 
 
 
