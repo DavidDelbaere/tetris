@@ -32,7 +32,7 @@ def remove_empty_columns(arr, _x_offset=0, _keep_counting=True):
 
 
 def find_perfect_moves(board, piece):
-    
+
     #determine height of first filled tile in the leftmost column of a block
     #e.g.
     # []
@@ -117,44 +117,30 @@ def find_perfect_moves(board, piece):
                         #(relative to the board) in a potential block placement
                         elif(y+columnDif < len(board)):
 
-                            if(columnDif < 0):
-                                if(((board[y-len(piece)+h+1+columnDif][x+w] == 0) and (piece[h][w] == 1))):
+                            if(((board[y-len(piece)+h+1+columnDif][x+w] == 0) and (piece[h][w] == 1))):
                                     
-                                    #if this is the bottom row of the block
-                                    if(h == (len(piece) - 1)):
-                                        print(str(x) + ": case4")
-                                        valid = False
-                                        break
+                                #if this is the bottom row of the block
+                                if(h == (len(piece) - 1)):
+                                    print(str(x) + ": case4")
+                                    valid = False
+                                    break
 
-                                    #determines whether there is a tile within the block beneath the currently selected block tile
-                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
-                                        print(str(x) + ": case5")
-                                        valid = False
-                                        break
-                            else:
-                                if(((board[y-len(piece)+h+columnDif][x+w] == 0) and (piece[h][w] == 1))):
-                                    
-                                    #if this is the bottom row of the block
-                                    if(h == (len(piece) - 1)):
-                                        print(str(x) + ": case4")
-                                        valid = False
-                                        break
-
-                                    #determines whether there is a tile within the block beneath the currently selected block tile
-                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
-                                        print(str(x) + ": case5")
-                                        valid = False
-                                        break
+                                #determines whether there is a tile within the block beneath the currently selected block tile
+                                elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                    print(str(x) + ": case5")
+                                    valid = False
+                                    break
                         
                         elif(h != len(piece)-1):
                             if((piece[h][w] == 1) and (piece[h+1][w] == 0)):
-                                print(str(x) + ": case6")
+                                print(str(x) + ": case8")
                                 valid = False
                                 break
 
         # check if the spots above the potential piece are occupied and therefore the spot is impossible to reach
         # for each column of the piece: find the highest point that is occupied
         # from this point, go all the way up in the board until you each top of board OR spot is occupied on board
+        '''
         for piece_col in range(len(piece[0])):
             highest_point = len(piece)
             for piece_row in range(len(piece)):
@@ -168,6 +154,7 @@ def find_perfect_moves(board, piece):
                     break
             if (valid == False):
                 break
+        '''
 
         if(valid):
             validPosList.append(x)
@@ -175,11 +162,11 @@ def find_perfect_moves(board, piece):
     print(validPosList)
     if(len(validPosList) != 0):
         bestPos = 0
+        bestAvgHeight = -1
         for x in validPosList:
             totalHeight = 0
             numTiles = 0
             avgHeight = 0
-            bestAvgHeight = 0
             for w in range(len(piece[0])):
                 y = 0
                 while(y != 20 and board[y][x+w] == 0):
@@ -189,7 +176,7 @@ def find_perfect_moves(board, piece):
                         totalHeight += (len(board)-y+h)
                         numTiles += 1
             avgHeight = totalHeight/numTiles
-            if(bestAvgHeight == 0 or avgHeight < bestAvgHeight):
+            if(bestAvgHeight == -1 or avgHeight < bestAvgHeight):
                 bestAvgHeight = avgHeight
                 bestPos = x
 
@@ -474,9 +461,6 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             raise TopReached
         self.add(new_block)
         self.next_block = BlocksGroup.get_random_block()
-
-        self.update_grid()
-        self._check_line_completion()
         
         ff_grid = self.grid
         for i in range(len(ff_grid)):
@@ -515,6 +499,9 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             bestMove = "no best move"
 
         print(bestMove)
+
+        self.update_grid()
+        self._check_line_completion()
 
     def update_grid(self):
         self._reset_grid()
