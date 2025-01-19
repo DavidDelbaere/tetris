@@ -657,13 +657,19 @@ def main():
         # Draw background and grid.
         screen.blit(background, (0, 0))
 
-        if checkForPerfect() != None:
+        if blocks.foundMove != None:
 
             color = (255,0,0)
+            ai_text = font.render(
+                "No Optimal Move", True, (255, 0, 0), bgcolor)
+            draw_centered_surface(screen, ai_text, 350)
 
         else:
             
             color = (0,255,0)
+            ai_text = font.render(
+                "Move Optimized!", True, (0, 255, 0), bgcolor)
+            draw_centered_surface(screen, ai_text, 350)
 
 
         pygame.draw.rect(screen, color, pygame.Rect(375, 400, 60, 60))
