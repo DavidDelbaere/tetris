@@ -1,5 +1,7 @@
 # High Score - Nav-Canada Challenge
 
+---BEFORE USING OUR APP, PLEASE INSTALL PYGAME AND PYNUM ON YOUR COMPUTER---
+ 
 Welcome to High Score, automation that supports without taking over. 
 
 We the creators of High Score are taking on the NAV-Canada challenge, designing an automation system that helps a human player achieve the highest possible Tetris score. The automation has limitations that require the human to step in and make key decisions, ensuring the human remains meaningfully involved and accountable for the result.
