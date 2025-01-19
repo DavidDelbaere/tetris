@@ -316,7 +316,10 @@ class Mirage(Block):
 
 class BlocksGroup(pygame.sprite.OrderedUpdates):
 
-    def find_perfect_move(self, board, piece):
+
+
+
+    def find_perfect_moves(self, board, piece):
             
         #determine height of first filled tile in the leftmost column of a block
         #e.g.
@@ -470,6 +473,42 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
 
         #returns a list of all columns in which the leftmost column of the block could 'perfectly' be placed
         return (bestPos, bestAvgHeight)
+    def find_perfect_move(self):
+        self.pot_best_moves = []
+        ff_grid = self.grid
+        for i in range(len(ff_grid)):
+            for j in range(len(ff_grid[i])):
+                if ff_grid[i][j] != 0:
+                    ff_grid[i][j] = 1
+        next_block_rotated_1 = np.rot90(self.current_block.struct)
+        next_block_rotated_2 = np.rot90(self.current_block.struct)
+        next_block_rotated_2 = np.rot90(next_block_rotated_2)
+        next_block_rotated_3 = np.rot90(self.current_block.struct)
+        next_block_rotated_3 = np.rot90(next_block_rotated_3)
+        next_block_rotated_3 = np.rot90(next_block_rotated_3)
+
+        perfectMove1 = self.find_perfect_moves(ff_grid, self.current_block.struct)
+        perfectMove2 = self.find_perfect_moves(ff_grid, next_block_rotated_1)
+        perfectMove3 = self.find_perfect_moves(ff_grid, next_block_rotated_2)
+        perfectMove4 = self.find_perfect_moves(ff_grid, next_block_rotated_3)
+
+
+
+        self.pot_best_moves.append((0, perfectMove1))
+        self.pot_best_moves.append((1, perfectMove2))
+        self.pot_best_moves.append((2, perfectMove3))
+        self.pot_best_moves.append((3, perfectMove4))
+
+        bestMove = (0, 0, -1)
+        for x in range(len(self.pot_best_moves)):
+            if(type(self.pot_best_moves[x][1][1]) is not str):
+                if((self.pot_best_moves[x][1][1] < bestMove[2]) or (bestMove[2] < 0)):
+                    bestMove = (self.pot_best_moves[x][0], self.pot_best_moves[x][1][0], self.pot_best_moves[x][1][1])
+        #print(pot_best_moves)
+        if(bestMove[2] < 0):
+            return (None,"AHHHHH")
+        return bestMove
+        
 
 
 
@@ -553,11 +592,15 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.grid = [[0 for _ in range(10)] for _ in range(20)]
 
     def _create_new_block(self):
+
         new_block = self.next_block or BlocksGroup.get_random_block()
         if Block.collide(new_block, self):
             raise TopReached
         self.add(new_block)
-
+        perfect_set = self.find_perfect_move()
+        if perfect_set[0] != None:
+            self.foundMove = perfect_set[1]
+            self.rotations = perfect_set[0]
         self.next_block = BlocksGroup.get_random_block()
         self.update_grid()
         self._check_line_completion()
@@ -602,13 +645,13 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
 
     def update_current_block(self):
         try:
-            perfect_set = self.find_perfect_move(self.grid,self.current_block.struct)
-            self.foundMove = perfect_set[0]
-            self.rotations = (int) perfect_set[1]
+
             
             if self.foundMove != None:
+                    print(self.foundMove)
                     if self.db == False:
                         self.db = True
+                        print(self.rotations)
                         for i in range(self.rotations):
                             self.current_block.rotate(self)
                     xdist = self.current_block.x
@@ -621,9 +664,6 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             self.current_block.move_down(self)
         except BottomReached:
             self.db = False
-            perfect_set = self.find_perfect_move(self.grid,self.current_block.struct)
-            self.foundMove = perfect_set[0]
-            self.rotations = perfect_set[1]
             self.stop_moving_current_block()
             self._create_new_block()
         else:
