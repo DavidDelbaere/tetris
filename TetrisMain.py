@@ -14,6 +14,41 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 500, 601
 GRID_WIDTH, GRID_HEIGHT = 300, 600
 TILE_SIZE = 30
 BOX_SIZE = 100
+COLOUR_RED = (255, 0, 0)
+COLOUR_HOVER_RED = (200, 0, 0)
+COLOUR_WHITE = (255, 255, 255)
+
+
+# restart button
+class Button:
+    def __init__(self, x, y, width, height, text, colour, hover_colour, text_colour):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text
+        self.colour = colour
+        self.hover_colour = hover_colour
+        self.text_colour = text_colour
+        try:
+            self.font = pygame.font.Font("Roboto-Regular.ttf", 20)
+        except OSError:
+            self.font = pygame.font.Font(pygame.font.get_default_font(), 20)
+        
+    def draw(self, screen):
+        # Change color on hover
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.rect(screen, self.hover_colour, self.rect)
+        else:
+            pygame.draw.rect(screen, self.colour, self.rect)
+
+        # Draw text
+        text_surf = self.font.render(self.text, True, self.text_colour)               
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        screen.blit(text_surf, text_rect)
+
+    def is_clicked(self, event):
+        # Check if the button is clicked
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            return True
+        return False
 
 
 
@@ -582,6 +617,7 @@ def draw_grid(background):
 def draw_centered_surface(screen, surface, y):
     screen.blit(surface, (400 - surface.get_width()//2, y))
 
+restart_button = None
 
 def main():
     pygame.init()
@@ -593,6 +629,7 @@ def main():
     # Create background.
     background = pygame.Surface(screen.get_size())
 
+    global restart_button
 
     bgcolor = (0, 0, 0)
     background.fill(bgcolor)
@@ -688,6 +725,16 @@ def main():
         draw_centered_surface(screen, score_text, 270)
         if game_over:
             draw_centered_surface(screen, game_over_text, 360)
+            draw_centered_surface(screen, game_over_text, 360)
+            if restart_button is None:  
+                restart_button = Button(350, 500, 100, 50, "RESTART", COLOUR_RED, COLOUR_HOVER_RED, COLOUR_WHITE)
+
+            draw_centered_surface(screen, game_over_text, 360)
+            restart_button.draw(screen)
+
+            # Check if the button is clicked
+            if pygame.mouse.get_pressed()[0] and restart_button.rect.collidepoint(pygame.mouse.get_pos()):
+                main()
         # Update.
         pygame.display.flip()
 
