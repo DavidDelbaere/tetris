@@ -800,17 +800,16 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
                     bestMove = (pot_best_moves[x][0], pot_best_moves[x][1][0], pot_best_moves[x][1][1])
         #print(pot_best_moves)
         if(bestMove[2] < 0):
-            bestMove = "no best move"
+            bestMove = (None,None)
 
         if bestMove[1] != None:
-            print(bestMove[1])
             self.foundMove = bestMove[1]
             self.rotations = bestMove[0]
             for i in range(self.rotations):
                 self.current_block.rotate(self)
-            self.next_block = BlocksGroup.get_random_block()
-            self.update_grid()
-            self._check_line_completion()
+        self.next_block = BlocksGroup.get_random_block()
+        self.update_grid()
+        self._check_line_completion()
 
 
     
@@ -854,7 +853,6 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         try:
             
             if self.foundMove != None:
-                    print(self.foundMove)
                     if self.db == False:
                         self.db = True
 
@@ -864,10 +862,10 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
                     elif xdist < self.foundMove:
                         self.current_block.move_right(self)
                     self.current_block.move_down
-            else:
-                self.current_block.move_down(self)
+            self.current_block.move_down(self)
         except BottomReached:
             self.db = False
+            self.foundMove = None
             self.stop_moving_current_block()
             self._create_new_block()
         else:
@@ -889,6 +887,8 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             if self.foundMove == None or self._current_block_movement_heading == pygame.K_DOWN:
                 action[self._current_block_movement_heading](self)
         except BottomReached:
+            self.foundMove = None
+            self.db = False
             self.stop_moving_current_block()
             self._create_new_block()
         else:
