@@ -80,7 +80,8 @@ class BottomReached(Exception):
 
 class TopReached(Exception):
     pass
-
+class LeftReached(Exception):
+    pass
 class Block(pygame.sprite.Sprite):
 
     @staticmethod
@@ -279,7 +280,12 @@ class Mirage(Block):
 
         self._draw(self.x,new_block.y)
         
-        
+    def move_left(self, group):
+        self.x -= 1
+        # Check if we reached the left margin.
+        if self.x < 0 or Block.collide(self, group):
+            self.x += 1
+            raise LeftReached    
 
         
     def _draw(self, x=0, y=0):
@@ -394,11 +400,8 @@ def find_perfect_moves(board, piece):
 
 class BlocksGroup(pygame.sprite.OrderedUpdates):
 
-   
-
     def find_perfect_move(self):
-        return (None,3)
-    
+        return (7,0)
 
 
 
@@ -406,7 +409,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
     def get_random_block():
         return random.choice(
             (SquareBlock, TBlock, LineBlock, LBlock, ZBlock))()
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         self.Mirage = None
