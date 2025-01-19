@@ -265,6 +265,8 @@ def find_perfect_moves(board, piece):
         #print(board)
     #print(piece)
         firstLeftTile = 0
+        bestPos = 0
+        bestAvgHeight = 0
         for height in range(len(piece)-1, -1, -1):
             if(piece[height][0] == 1):
                 # firstLeftTile found
