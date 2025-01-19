@@ -344,6 +344,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
                 firstLeftTile += 1
 
         #determines the difference in height between two columns
+        
         for w in range(len(piece[0])):
             columnDif = 0
             leftColumnTop = 0
@@ -602,6 +603,8 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         if perfect_set[0] != None:
             self.foundMove = perfect_set[1]
             self.rotations = perfect_set[0]
+            for i in range(self.rotations):
+                self.current_block.rotate(self)
         self.next_block = BlocksGroup.get_random_block()
         self.update_grid()
         self._check_line_completion()
@@ -653,8 +656,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
                     if self.db == False:
                         self.db = True
                         print(self.rotations)
-                        for i in range(self.rotations):
-                            self.current_block.rotate(self)
+
                     xdist = self.current_block.x
                     if xdist > self.foundMove:
                         self.current_block.move_left(self)
