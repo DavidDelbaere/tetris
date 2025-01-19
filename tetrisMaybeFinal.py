@@ -44,7 +44,6 @@ def find_perfect_moves(board, piece):
     #    []
     # would return 1
 
-    #print(board)
     #print(piece)
     firstLeftTile = 0
     for height in range(len(piece)-1, -1, -1):
@@ -53,25 +52,7 @@ def find_perfect_moves(board, piece):
             break
         else:
             # firstLeftTile not found, increment firstLeftTile
-            firstLeftTile += 1
-
-    #determines the difference in height between two columns
-    for w in range(len(piece[0])):
-        columnDif = 0
-        leftColumnTop = 0
-        nowColumnTop = 0
-                
-        columnHeight = len(piece)-1
-        while(piece[columnHeight][0] == 0):
-            columnHeight -= 1
-        leftColumnTop = columnHeight
-                
-        columnHeight = len(piece)-1
-        while(piece[columnHeight][w] == 0):
-            columnHeight -= 1
-        nowColumnTop = columnHeight
-
-        columnDif = nowColumnTop - leftColumnTop
+            firstLeftTile += 1  
 
     #initialize variables
     validPosList = []
@@ -90,17 +71,34 @@ def find_perfect_moves(board, piece):
         #iterates through the columns in a block
         for w in range(len(piece[0])):
             
+            #determines the difference in height between two columns
+            columnDif = 0
+            leftColumnTop = 0
+            nowColumnTop = 0
+                    
+            columnHeight = len(piece)-1
+            while(piece[columnHeight][0] == 0):
+                columnHeight -= 1
+            leftColumnTop = columnHeight
+                    
+            columnHeight = len(piece)-1
+            while(piece[columnHeight][w] == 0):
+                columnHeight -= 1
+            nowColumnTop = columnHeight
+
+            columnDif = nowColumnTop - leftColumnTop
+
             #determines whether the right side of a block would lie outside
             #the play area in a potential position
             if(x + w >= len(board[0])):
-                #print(str(x) + ": case1")
+                print(str(x) + ": case1")
                 valid = False
                 break
             else:
                 #determines whether the bottom of a block would lie beneath
                 #the play area in a potential position
                 if((y + firstLeftTile)>len(board)):
-                    #print(str(x) + ": case2")
+                    print(str(x) + ": case2")
                     valid = False
                     break
 
@@ -111,30 +109,46 @@ def find_perfect_moves(board, piece):
                         #determines whether a tile on the board(that is filled) would be intersected
                         #by a potential block placement
                         if((board[y-len(piece)+h][x+w] == 1) and (piece[h][w] == 1)):
-                            #print(str(x) + ":" + str(h)+ ": case3")
+                            print(str(x) + ":" + str(h)+ ": case3")
                             valid = False
                             break
 
                         #determines whether the selected tile on a block would leave a hole beneath it
                         #(relative to the board) in a potential block placement
                         elif(y+columnDif < len(board)):
-                            if(((board[y-len(piece)+h+1+columnDif][x+w] == 0) and (piece[h][w] == 1))):
-                                
-                                #if this is the bottom row of the block
-                                if(h == (len(piece) - 1)):
-                                    #print(str(x) + ": case4")
-                                    valid = False
-                                    break
 
-                                #determines whether there is a tile within the block beneath the currently selected block tile
-                                elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
-                                    #print(str(x) + ": case5")
-                                    valid = False
-                                    break
+                            if(columnDif < 0):
+                                if(((board[y-len(piece)+h+1+columnDif][x+w] == 0) and (piece[h][w] == 1))):
+                                    
+                                    #if this is the bottom row of the block
+                                    if(h == (len(piece) - 1)):
+                                        print(str(x) + ": case4")
+                                        valid = False
+                                        break
+
+                                    #determines whether there is a tile within the block beneath the currently selected block tile
+                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                        print(str(x) + ": case5")
+                                        valid = False
+                                        break
+                            else:
+                                if(((board[y-len(piece)+h+columnDif][x+w] == 0) and (piece[h][w] == 1))):
+                                    
+                                    #if this is the bottom row of the block
+                                    if(h == (len(piece) - 1)):
+                                        print(str(x) + ": case4")
+                                        valid = False
+                                        break
+
+                                    #determines whether there is a tile within the block beneath the currently selected block tile
+                                    elif((piece[h][w] == 1) and (piece[h+1][w] == 0)):
+                                        print(str(x) + ": case5")
+                                        valid = False
+                                        break
                         
                         elif(h != len(piece)-1):
                             if((piece[h][w] == 1) and (piece[h+1][w] == 0)):
-                                #print(str(x) + ": case6")
+                                print(str(x) + ": case6")
                                 valid = False
                                 break
 
@@ -181,7 +195,6 @@ def find_perfect_moves(board, piece):
     else:
         bestPos = "none"
         bestAvgHeight = "none"
-
 
     #returns a list of all columns in which the leftmost column of the block could 'perfectly' be placed
     return (bestPos, bestAvgHeight)
@@ -461,7 +474,8 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.add(new_block)
         self.next_block = BlocksGroup.get_random_block()
 
-        
+        self.update_grid()
+        self._check_line_completion()
         
         ff_grid = self.grid
         for i in range(len(ff_grid)):
@@ -500,9 +514,6 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             bestMove = "no best move"
 
         print(bestMove)
-
-        self.update_grid()
-        self._check_line_completion()
 
     def update_grid(self):
         self._reset_grid()
