@@ -526,6 +526,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.score = 0
         self.foundMove = False
         self.next_block = None
+        #HELP
         self.db = False
         # Not really moving, just to initialize the attribute.
         self.stop_moving_current_block()
