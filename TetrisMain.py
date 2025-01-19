@@ -611,13 +611,13 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         if Block.collide(new_block, self):
             raise TopReached
         self.add(new_block)
-        
     
         ff_grid = self.grid
         for i in range(len(ff_grid)):
             for j in range(len(ff_grid[i])):
                 if ff_grid[i][j] != 0:
                     ff_grid[i][j] = 1
+                    
         next_block_rotated_1 = np.rot90(self.current_block.struct)
         next_block_rotated_2 = np.rot90(self.current_block.struct)
         next_block_rotated_2 = np.rot90(next_block_rotated_2)
@@ -653,6 +653,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.next_block = BlocksGroup.get_random_block()
         self.update_grid()
         self._check_line_completion()
+    
 
 
     
