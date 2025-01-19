@@ -493,7 +493,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         if(bestMove[2] < 0):
             bestMove = "no best move"
 
-        #print(bestMove)
+        print(bestMove)
 
         self.update_grid()
         self._check_line_completion()
