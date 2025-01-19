@@ -412,7 +412,7 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
         self.Mirage = None
         self._reset_grid()
         self._ignore_next_stop = False
-        self.speed = 1000
+        self.speed = 500
         self.score = 0
         self.foundMove = False
         self.next_block = None
@@ -550,7 +550,9 @@ class BlocksGroup(pygame.sprite.OrderedUpdates):
             self.current_block.move_down(self)
         except BottomReached:
             self.db = False
-            self.foundMove = None
+            perfect_set = self.find_perfect_move()
+            self.foundMove = perfect_set[0]
+            self.rotations = perfect_set[1]
             self.stop_moving_current_block()
             self._create_new_block()
         else:
