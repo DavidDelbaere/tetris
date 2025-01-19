@@ -8,4 +8,4 @@ High Score looks at the current board state, as well as the next piece to be dro
 
 We started with an open source tetris file found right here on Github. We used the built-in grid and block representations, all 4 rotational iterations for all 7 types of blocks to scan the board for the best possible move. It checks whether placing a block is valid by determining every possible landing spot, whether the block will intersect with another, already placed block, and whether placing a block there will create an unfavourable position for the user (a hole that stops rows from being eliminated). We altered the UI so that it lets the user know when the automation is active and is able to find the best move for the user. 
 
-All of our code is in Python, as this was what the open source tetris game was originally coded in. It contains both pygame and numpy. 
+All of our code is in Python, as this is what the open source tetris game was originally coded in. It contains both pygame and numpy. 
