@@ -172,6 +172,7 @@ def find_perfect_moves(board, piece):
         if(valid):
             validPosList.append(x)
 
+    print(validPosList)
     if(len(validPosList) != 0):
         bestPos = 0
         for x in validPosList:
